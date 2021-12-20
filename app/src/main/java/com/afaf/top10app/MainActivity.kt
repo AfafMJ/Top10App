@@ -29,31 +29,47 @@ class MainActivity : AppCompatActivity() {
 
 
         appRecyclerView = findViewById(R.id.questions_rv)
-        rvAdapter = Adapter(questions )
+        rvAdapter = Adapter(questions)
         appRecyclerView.adapter = rvAdapter
         appRecyclerView.layoutManager = LinearLayoutManager(this)
 
         ButtonGet.setOnClickListener {
-            parseRRS()}
 
+            CoroutineScope(IO).launch {
+                val data = async {
+                    val perser = XMLParser()
+                    perser.pars()
 
-    }
-
-
-    private fun parseRRS(){
-        CoroutineScope(IO).launch {
-            val data = async {
-                val perser = XMLParser()
-                perser.pars()
-            }.await()
-            try{
-                withContext(Main){
-                    rvAdapter.update(data)
+                }.await()
+                try {
+                    withContext(Main) {
+                        rvAdapter.update(data)
+                    }
+                } catch (e: java.lang.Exception) {
+                    Log.d("MAin", "unable to get")
                 }
-            }catch (e: java.lang.Exception){
-                Log.d("MAin","unable to get")
             }
         }
+
+
     }
+
+
+//    private fun parseRRS(){
+//        CoroutineScope(IO).launch {
+//            val data = async {
+//                val perser = XMLParser()
+//                perser.pars()
+//
+//            }.await()
+//            try{
+//                withContext(Main){
+//                    rvAdapter.update(data)
+//                }
+//            }catch (e: java.lang.Exception){
+//                Log.d("MAin","unable to get")
+//            }
+//        }
+//    }
 
 }
